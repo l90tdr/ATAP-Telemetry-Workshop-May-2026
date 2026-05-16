@@ -5,3 +5,5 @@
 *_files/
 .DS_Store
 data/raw/
+
+/.quarto/
