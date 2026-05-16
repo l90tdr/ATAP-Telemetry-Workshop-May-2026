@@ -1,0 +1,147 @@
+---
+title: "ATAP Workshop: Folder Organisation"
+
+
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: lumen
+    code_folding: show
+    highlight: pygments
+---
+
+
+# Introduction
+
+Good folder organisation is one of the simplest but most important aspects of reproducible research. Structuring projects clearly makes it much easier to:
+
+- navigate analyses
+- locate outputs
+- avoid overwriting files
+- collaborate with others
+- reproduce workflows later
+
+Throughout this workshop we assume that analyses are being run inside an R Project. Start by creating a folder that can house all of this work along the lines of ATAP workshop. Open R and save a new project in this folder. 
+
+Shooting from the hip in the beginning will come back to bite you as projects grow in complexity! 
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+### Ouch
+
+![](plots/messy_folder.png)
+
+:::
+
+::: {.column width="50%"}
+
+### Much better!
+
+![](plots/clean_folder.png)
+
+:::
+
+:::
+
+## Check your R version
+
+Before starting, it is useful to check the version of R that you are using.
+
+```{r, results='hide'}
+R.Version()
+```
+
+# Installing and Loading Packages
+
+We will use the `pacman` package as a convenient way to install and load packages simultaneously.
+
+```{r}
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
+}
+```
+
+Load the required package:
+
+```{r}
+pacman::p_load(purrr)
+```
+
+# Working Directories
+
+A working directory is the folder where R will look for files and save outputs by default.
+
+Check your current working directory:
+
+```{r, results='hide'}
+getwd()
+```
+
+Because we are working inside an R Project, the working directory is automatically set to the project root when the project is opened. So you can simple navigate all your folders once created with "data/detections.csv" for example
+
+# Creating Project Folders
+
+A clean project structure helps separate:
+- raw data
+- scripts
+- plots
+- tables
+- manuscript files
+
+We first create a path object pointing to the project location.
+
+```{r}
+folder_path <- "."
+```
+
+Because we are working inside an R Project, `"."` refers to the project root directory. Instead of hardcoding
+
+## Define Folder Names
+
+Choose the folders you want to create. Common examples include:
+- `data`
+- `scripts`
+- `plots`
+- `tables`
+- `paper`
+
+Remember:
+- folder names are character strings and must be enclosed in quotation marks
+- avoid accidental spaces in folder names
+
+```{r}
+folders <- c(
+  "data",
+  "scripts",
+  "plots",
+  "tables",
+  "paper"
+)
+```
+
+# Create the Folders
+
+We can use `purrr::walk()` to iteratively create all folders in one call.
+
+```{r}
+purrr::walk(
+  file.path(folder_path, folders),
+  dir.create,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+```
+
+# Check the Folder Structure
+
+Finally, confirm that the folders were created successfully.
+
+```{r}
+list.dirs(folder_path, recursive = FALSE)
+```
+
+Easy and now we can get stuck into it with peace of mind that things are easy to find. 

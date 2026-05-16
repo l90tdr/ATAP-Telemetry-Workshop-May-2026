@@ -1,0 +1,25 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "ATAP Telemetry Workshop"
+  navbar:
+    left:
+      - text: Home
+        href: index.qmd
+      - text: 1. Folder organising
+        href: 1_folder_organising.Rmd
+      - text: 2. Telemetry QC
+        href: 2_telemetry_qc.Rmd
+      - text: 3. Exploratory figures
+        href: 3_exploratory_figures.Rmd
+
+format:
+  html:
+    theme: flatly
+    toc: true
+    toc-depth: 3
+    code-fold: show
+    code-copy: true
+    code-line-numbers: true

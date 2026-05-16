@@ -1,0 +1,842 @@
+---
+title: "ATAP Workshop: Telemetry Quality Control"
+
+
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: lumen
+    code_folding: show
+    highlight: pygments
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+
+The first take-home message is that telemetry data are generally messy and need cleaning.
+
+One of the most time-consuming aspects of any analysis is cleaning datasets and running quality controls so that the analyses that follow are robust and repeatable.
+
+Some of these are standard data science concepts, while others are more specific to acoustic telemetry data.
+
+Fundamentally, acoustic telemetry projects usually consist of three or four core datasets:
+
+-   detections
+-   biometrics or tagging metadata
+-   receiver metadata
+-   release locations, depending on how the project metadata are organised
+
+This workflow is based broadly on the formats currently used in ATAP data reports distributed to the telemetry community in southern Africa.
+
+If you are using data that have been uploaded to and downloaded from Fathom, you may need to slightly adjust the column names or file structures. However, the workflow should introduce the core coding concepts so that you can adapt them to other telemetry datasets.
+
+# Load packages
+
+We start by loading the packages needed for data wrangling, date handling, cleaning column names, and working with text strings.
+
+```{r load-packages}
+pacman::p_load(
+  tidyverse,
+  lubridate,
+  janitor,
+  stringr
+)
+
+rm(list = ls()) #start fresh environment 
+```
+
+The `tidyverse` loads the core data wrangling and plotting packages. The `lubridate` package is especially useful for working with dates and times.
+
+# Biometrics metadata
+
+We begin with the tagging metadata. This is often the most user-specific dataset because each project records tagging information slightly differently.
+
+But lets use this small biometrics example dataset 
+
+```{r load-biometrics}
+biometrics <- read.csv("data/biometrics.csv")
+
+print(biometrics)
+```
+
+Convert the data to a tibble. Tibbles are the modern tidyverse version of a data frame and give a cleaner printout of column types and structure.
+
+```{r biometrics-to-tibble}
+biometrics <- as_tibble(biometrics)
+
+print(biometrics)
+```
+
+One of the first things to notice is that the column names use a mix of capital letters, lower-case letters, and separators. We can clean these using `janitor::clean_names()`.
+
+```{r clean-biometrics-names}
+biometrics <- janitor::clean_names(biometrics)
+
+print(biometrics)
+```
+
+## Format dates and text fields
+
+Dates are one of the trickiest parts of telemetry workflows. If dates are formatted as `2025-12-12`, base R and `lubridate::ymd()` usually understand them. If dates are formatted as `12/12/2025`, you often need `lubridate::dmy()`.
+
+We also standardise text fields so that joins and summaries behave as expected.
+
+```{r clean-biometrics-fields}
+biometrics <- biometrics %>% 
+  mutate(
+    release_date = dmy(release_date),
+    tag_end = dmy(tag_end),
+    transmitter = as.character(transmitter),
+    species = str_to_title(species),
+    release = str_to_upper(release),
+    sex = str_to_upper(sex),
+    recaptured = str_to_upper(recaptured)
+  )
+```
+
+Check the structure of the cleaned data.
+
+```{r inspect-biometrics}
+glimpse(biometrics)
+
+print(biometrics)
+```
+
+## Check species names
+
+Let us query the species column.
+
+```{r count-species}
+biometrics %>% 
+  count(species)
+```
+
+This shows how R treats spelling differences and trailing spaces as different values. We can trim spaces and recode obvious spelling mistakes.
+
+```{r fix-species}
+biometrics <- biometrics %>% 
+  mutate(
+    species = stringr::str_trim(species),
+    species = recode(
+      species,
+      "Brinze Whaler" = "Bronze Whaler"
+    )
+  )
+```
+
+## Check size data
+
+Now inspect the size data.
+
+```{r check-size}
+biometrics %>% 
+  arrange(desc(size)) %>% 
+  dplyr::select(transmitter, size)
+```
+
+Some packages share function names. For example, `select()` can be masked by other packages. If `select()` behaves strangely, use `dplyr::select()` so R knows exactly which function you mean.
+
+In this case, one transmitter has a size value that appears to have been entered in the wrong units. We can fix this using a vectorised `if_else()` statement.
+
+```{r fix-size}
+biometrics <- biometrics %>% 
+  mutate(
+    size = if_else(
+      transmitter == "5212",
+      size / 10,
+      size
+    )
+  )
+```
+
+One final check.
+
+```{r final-biometrics-check}
+print(biometrics)
+```
+
+Export the clean biometrics file for later use.
+
+```{r export-biometrics, eval=FALSE}
+write.csv(
+  biometrics,
+  "data/biometrics_clean.csv",
+  row.names = FALSE
+)
+```
+
+# Detection data
+
+Load the detections using `readr::read_csv()`. This imports directly to a tibble and usually does a good job of detecting column types.
+
+```{r load-detections}
+detections <- readr::read_csv("data/detections.csv")
+```
+
+Check the top and bottom of the dataset.
+
+```{r inspect-detections}
+head(detections)
+
+tail(detections)
+```
+
+Clean the column names.
+
+```{r clean-detection-names}
+detections <- janitor::clean_names(detections)
+
+head(detections)
+```
+
+## Time zones
+
+Time is critical in telemetry. Receiver detections are often recorded in UTC, but analyses may need to be conducted in local time.
+
+Here we convert detection timestamps from UTC to South African local time. South Africa uses SAST, which is UTC+2, and does not use daylight saving time.
+
+```{r convert-detection-time}
+detections <- detections %>% 
+  mutate(
+    date_and_time_utc = with_tz(
+      date_and_time_utc,
+      tzone = "Africa/Johannesburg"
+    )
+  ) %>% 
+  rename(timestamp = date_and_time_utc)
+```
+
+Check the conversion.
+
+```{r check-detection-time}
+head(detections)
+```
+
+## Clean detection fields
+
+There are some naming irregularities in the detection file. We also remove columns that are not useful for this workshop and extract the numeric receiver ID.
+
+```{r clean-detection-fields}
+detections <- detections %>% 
+  dplyr::select(
+    -transmitter,
+    -sensor_value,
+    -sensor_unit,
+    -transmitter_serial
+  ) %>% 
+  rename(transmitter = transmitter_name) %>% 
+  mutate(
+    receiver = sub(".*-", "", receiver)
+  )
+```
+
+## Check transmitters
+
+Let us look at the transmitters in the detection data.
+
+```{r distinct-transmitters}
+detections %>% 
+  distinct(transmitter)
+```
+
+There are more transmitters in the detection data than in the biometrics file.
+
+```{r transmitter-counts}
+detections %>% 
+  group_by(transmitter) %>% 
+  summarise(detections = n())
+```
+
+We can compare transmitters in the detections against the biometrics file using joins.
+
+The `anti_join()` shows transmitters in the detections that are not in the biometrics file.
+
+```{r detections-not-in-biometrics}
+detections %>% 
+  anti_join(
+    biometrics,
+    by = "transmitter"
+  ) %>% 
+  count(transmitter, sort = TRUE)
+```
+
+The `semi_join()` keeps only detection records with transmitters that are present in the biometrics file.
+
+```{r detections-in-biometrics}
+detections %>% 
+  semi_join(
+    biometrics,
+    by = "transmitter"
+  ) %>% 
+  count(transmitter, sort = TRUE)
+```
+
+## Investigate suspicious transmitter names
+
+What is tag `5211a`?
+
+```{r check-5211a}
+detections %>% 
+  filter(transmitter %in% c("5211", "5211a")) %>% 
+  count(transmitter)
+```
+
+Look at the detections in time order.
+
+```{r inspect-5211a}
+detections %>% 
+  filter(transmitter %in% c("5211", "5211a")) %>% 
+  arrange(timestamp)
+```
+
+It appears that `5211a` detections are duplicates of `5211`. We can inspect the duplicated records directly.
+
+```{r duplicated-5211a}
+detections %>% 
+  filter(transmitter %in% c("5211", "5211a")) %>% 
+  group_by(timestamp, station_name) %>% 
+  filter(n() > 1) %>% 
+  arrange(timestamp)
+```
+
+Now remove transmitters that do not have biometrics metadata.
+
+```{r filter-detections-to-biometrics}
+detections <- detections %>% 
+  filter(transmitter %in% biometrics$transmitter)
+```
+
+An alternative is to use a `semi_join()`.
+
+```{r alternative-semi-join, eval=FALSE}
+detections <- detections %>% 
+  semi_join(
+    biometrics,
+    by = "transmitter"
+  )
+```
+
+Check the remaining transmitters.
+
+```{r remaining-transmitters}
+detections %>% 
+  distinct(transmitter)
+```
+
+## Check duplicate detections
+
+Now check whether there are exact duplicate records.
+
+```{r check-duplicate-detections}
+detections %>% 
+  group_by(across(everything())) %>% 
+  filter(n() > 1)
+```
+
+Duplicate detections are common in telemetry datasets. They can arise from manual file handling, accidental import of the same receiver file more than once, or simultaneous detections across neighbouring receivers.
+
+In this example we group across all columns so that the check only returns exact duplicates.
+
+Export the cleaned detections for later use.
+
+```{r export-detections, eval=FALSE}
+write.csv(
+  detections,
+  "data/detections_clean.csv",
+  row.names = FALSE
+)
+```
+
+# Receiver metadata
+
+Receiver metadata are often one of the most challenging parts of telemetry workflows. Each row usually represents a physical receiver deployment, but these rows do not always translate cleanly into continuous station listening effort.
+
+Receivers may be lost, recovered late, replaced before recovery, or redeployed with missing or approximate times. Because downstream analyses often rely on receiver effort, we need to reconstruct when each station was actually listening.
+
+ATAP metadata are reported in SAST.
+
+```{r load-receivers}
+receiver <- readr::read_csv("data/receivers.csv")
+
+head(receiver)
+```
+
+Clean the receiver metadata.
+
+```{r clean-receivers}
+receiver <- receiver %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    receiver = sub(".*-", "", receiver_name),
+    station_name = stringr::str_squish(station_name),
+    installation_name = stringr::str_squish(installation_name),
+    status = stringr::str_to_lower(status)
+  ) %>% 
+  dplyr::select(-project_name, -receiver_name) %>% 
+  rename(
+    longitude = station_longitude,
+    latitude = station_latitude
+  )
+```
+
+For downstream packages such as `actel` and `rsp`, deployment and recovery times usually need to be accurate. If researchers have not reported exact times, you may need to create reasonable deployment windows based on field notes or rollover dates.
+
+## Count deployment rows
+
+Look at the number of deployment rows per receiver station.
+
+```{r receiver-row-counts}
+receiver %>% 
+  count(station_name, sort = TRUE) %>% 
+  print(n = 30)
+```
+
+Check for exact duplicate records.
+
+```{r receiver-duplicates}
+receiver %>% 
+  duplicated() %>% 
+  sum()
+```
+
+## Check station coordinates
+
+Receiver ID numbers move around the study region, but station names should usually stay constant. Therefore, coordinate consistency should be checked by `station_name`, not by receiver ID.
+
+```{r check-station-coordinates}
+receiver %>% 
+  group_by(station_name) %>% 
+  summarise(
+    n_lat = n_distinct(latitude),
+    n_lon = n_distinct(longitude),
+    .groups = "drop"
+  ) %>% 
+  filter(
+    n_lat > 1 | n_lon > 1
+  )
+```
+
+## Lost receivers
+
+Some receivers are marked as lost. Depending on the analysis, we may want to remove lost receiver periods from effort calculations.
+
+```{r lost-receiver-periods}
+lost_receiver_periods <- receiver %>% 
+  filter(status == "lost") %>% 
+  dplyr::select(
+    station_name,
+    receiver,
+    deploymentdatetime_timestamp,
+    recoverydatetime_timestamp,
+    status
+  )
+
+print(lost_receiver_periods)
+```
+
+This can be deceptive because lost receivers may still have an end date. Often this is not the actual recovery date, but the date of the next deployment used to close the deployment window.
+
+We can check whether there are detections during lost receiver periods.
+
+```{r detections-on-lost-receivers}
+detections_on_lost_receivers <- detections %>% 
+  inner_join(
+    lost_receiver_periods,
+    by = "station_name",
+    relationship = "many-to-many"
+  ) %>% 
+  filter(
+    timestamp >= deploymentdatetime_timestamp,
+    timestamp <= recoverydatetime_timestamp
+  )
+
+print(detections_on_lost_receivers)
+```
+
+A key question is whether detections from receivers marked as lost should be retained. If a receiver was later found and uploaded, detections may be real, but the true recovery date may still be ambiguous.
+
+For this workshop, we remove lost receiver records from later effort calculations.
+
+```{r remove-lost-receivers}
+receiver <- receiver %>% 
+  filter(status != "lost")
+```
+
+# Receiver deployment gaps
+
+Next we look at time gaps between deployments. Typically, we would expect gaps of hours to days, or perhaps a week or two if spare units were not available or if field teams had to wait for a weather window.
+
+```{r calculate-receiver-gaps}
+receiver <- receiver %>% 
+  arrange(station_name, deploymentdatetime_timestamp) %>% 
+  group_by(station_name) %>% 
+  mutate(
+    previous_recovery = lag(recoverydatetime_timestamp),
+    deployment_gap_days = as.numeric(
+      difftime(
+        deploymentdatetime_timestamp,
+        previous_recovery,
+        units = "days"
+      )
+    )
+  ) %>% 
+  arrange(desc(deployment_gap_days))
+```
+
+Create a table of consecutive deployment gaps greater than 21 days.
+
+```{r receiver-gaps}
+receiver_gaps <- receiver %>% 
+  ungroup() %>% 
+  arrange(station_name, deploymentdatetime_timestamp) %>% 
+  group_by(station_name) %>% 
+  mutate(
+    receiver_a = receiver,
+    deploymentdatetime_timestamp_a = deploymentdatetime_timestamp,
+    recoverydatetime_timestamp_a = recoverydatetime_timestamp,
+    receiver_b = lead(receiver),
+    deploymentdatetime_timestamp_b = lead(deploymentdatetime_timestamp),
+    recoverydatetime_timestamp_b = lead(recoverydatetime_timestamp),
+    gap_days = as.numeric(
+      difftime(
+        deploymentdatetime_timestamp_b,
+        recoverydatetime_timestamp_a,
+        units = "days"
+      )
+    )
+  ) %>% 
+  filter(
+    !is.na(gap_days),
+    gap_days > 21
+  ) %>% 
+  dplyr::select(
+    station_name,
+    receiver_a,
+    deploymentdatetime_timestamp_a,
+    recoverydatetime_timestamp_a,
+    receiver_b,
+    deploymentdatetime_timestamp_b,
+    recoverydatetime_timestamp_b,
+    gap_days
+  ) %>% 
+  arrange(desc(gap_days))
+
+receiver_gaps
+```
+
+These long gaps require interpretation. In some cases, an acoustic release may not have responded and the receiver was recovered during a later rollover. In others, a receiver may have been missed on a dive and a new unit deployed on a new mooring.
+
+# Overlapping deployments
+
+Now we check for overlapping deployment windows at the same station.
+
+Some overlaps may be short and reflect normal rollover logistics. Others may be hundreds of days long and indicate that a receiver was recovered much later, even though another unit had already been deployed.
+
+```{r receiver-overlaps}
+receiver_overlaps <- receiver %>% 
+  ungroup() %>% 
+  mutate(row_id = row_number()) %>% 
+  inner_join(
+    receiver %>% 
+      ungroup() %>% 
+      mutate(row_id_compare = row_number()),
+    by = "station_name",
+    suffix = c("_a", "_b"),
+    relationship = "many-to-many"
+  ) %>% 
+  filter(
+    row_id < row_id_compare,
+    deploymentdatetime_timestamp_a < recoverydatetime_timestamp_b,
+    recoverydatetime_timestamp_a > deploymentdatetime_timestamp_b
+  ) %>% 
+  mutate(
+    overlap_start = pmax(
+      deploymentdatetime_timestamp_a,
+      deploymentdatetime_timestamp_b
+    ),
+    overlap_end = pmin(
+      recoverydatetime_timestamp_a,
+      recoverydatetime_timestamp_b
+    ),
+    overlap_days = as.numeric(
+      difftime(
+        overlap_end,
+        overlap_start,
+        units = "days"
+      )
+    )
+  ) %>% 
+  filter(overlap_days > 1) %>% 
+  dplyr::select(
+    station_name,
+    receiver_a,
+    deploymentdatetime_timestamp_a,
+    recoverydatetime_timestamp_a,
+    receiver_b,
+    deploymentdatetime_timestamp_b,
+    recoverydatetime_timestamp_b,
+    overlap_start,
+    overlap_end,
+    overlap_days
+  ) %>% 
+  arrange(desc(overlap_days))
+
+receiver_overlaps
+```
+
+# Reconstruct receiver effort
+
+Where possible, we want to collapse receiver deployment rows into continuous listening-effort windows per station.
+
+The key idea is that if the next deployment starts before, or shortly after, the current running recovery date, we treat the station as part of the same listening-effort window. If the gap is longer than our tolerance, we start a new effort window.
+
+```{r receiver-effort}
+gap_tolerance_days <- 21
+
+receiver_effort <- receiver %>% 
+  ungroup() %>% 
+  filter(status != "lost") %>% 
+  arrange(station_name, deploymentdatetime_timestamp) %>% 
+  group_by(station_name) %>% 
+  mutate(
+    recovery_for_effort = coalesce(
+      recoverydatetime_timestamp,
+      deploymentdatetime_timestamp
+    ),
+    recovery_num = as.numeric(recovery_for_effort),
+    running_effort_end_num = cummax(recovery_num),
+    previous_effort_end = as.POSIXct(
+      lag(running_effort_end_num),
+      origin = "1970-01-01",
+      tz = "Africa/Johannesburg"
+    ),
+    gap_from_previous = as.numeric(
+      difftime(
+        deploymentdatetime_timestamp,
+        previous_effort_end,
+        units = "days"
+      )
+    ),
+    new_effort_window = case_when(
+      is.na(gap_from_previous) ~ 1,
+      gap_from_previous > gap_tolerance_days ~ 1,
+      TRUE ~ 0
+    ),
+    effort_window = cumsum(new_effort_window)
+  ) %>% 
+  group_by(station_name, effort_window) %>% 
+  summarise(
+    effort_start = min(deploymentdatetime_timestamp, na.rm = TRUE),
+    effort_end = max(recoverydatetime_timestamp, na.rm = TRUE),
+    n_receiver_deployments = n(),
+    receivers_used = paste(unique(receiver), collapse = ", "),
+    .groups = "drop"
+  ) %>% 
+  arrange(station_name, effort_start)
+
+receiver_effort
+```
+
+# Compare assumed and cleaned receiver effort
+
+Researchers sometimes assume that receiver effort runs continuously from the minimum deployment date to the maximum recovery date at each station.
+
+That can overestimate listening effort when there are long gaps between deployments. Here we compare that simple assumption against the cleaned effort windows.
+
+```{r assumed-station-effort}
+assumed_station_effort <- receiver %>% 
+  filter(status != "lost") %>% 
+  group_by(station_name) %>% 
+  summarise(
+    assumed_start = min(deploymentdatetime_timestamp, na.rm = TRUE),
+    assumed_end = max(recoverydatetime_timestamp, na.rm = TRUE),
+    assumed_effort_days = as.numeric(
+      difftime(
+        assumed_end,
+        assumed_start,
+        units = "days"
+      )
+    ),
+    .groups = "drop"
+  )
+```
+
+Calculate cleaned effort by summing the effort windows.
+
+```{r cleaned-station-effort}
+cleaned_station_effort <- receiver_effort %>% 
+  mutate(
+    effort_days = as.numeric(
+      difftime(
+        effort_end,
+        effort_start,
+        units = "days"
+      )
+    )
+  ) %>% 
+  group_by(station_name) %>% 
+  summarise(
+    cleaned_effort_days = sum(effort_days, na.rm = TRUE),
+    n_effort_windows = n(),
+    .groups = "drop"
+  )
+```
+
+Now compare assumed and cleaned effort.
+
+```{r effort-comparison}
+effort_comparison <- assumed_station_effort %>% 
+  left_join(
+    cleaned_station_effort,
+    by = "station_name"
+  ) %>% 
+  mutate(
+    overestimation_days =
+      assumed_effort_days - cleaned_effort_days,
+    overestimation_percent =
+      (
+        overestimation_days /
+          cleaned_effort_days
+      ) * 100
+  ) %>% 
+  arrange(desc(overestimation_days))
+
+effort_comparison
+```
+
+Summarise the overall difference.
+
+```{r overall-effort-summary}
+overall_effort_summary <- effort_comparison %>% 
+  summarise(
+    total_assumed_days = sum(assumed_effort_days, na.rm = TRUE),
+    total_cleaned_days = sum(cleaned_effort_days, na.rm = TRUE),
+    total_overestimate_days =
+      total_assumed_days - total_cleaned_days,
+    overall_overestimate_percent =
+      (
+        total_overestimate_days /
+          total_cleaned_days
+      ) * 100
+  )
+
+print(overall_effort_summary)
+```
+
+## Plot effort overestimation
+
+This quick plot shows the top ten stations where assuming continuous effort would have most strongly overestimated listening effort.
+
+```{r plot-effort-overestimation}
+effort_comparison %>% 
+  slice_max(overestimation_days, n = 10) %>% 
+  dplyr::select(
+    station_name,
+    assumed_effort_days,
+    cleaned_effort_days
+  ) %>% 
+  pivot_longer(
+    -station_name,
+    names_to = "effort_type",
+    values_to = "effort_days"
+  ) %>% 
+  mutate(
+    effort_type = recode(
+      effort_type,
+      assumed_effort_days = "Assumed",
+      cleaned_effort_days = "Cleaned"
+    )
+  ) %>% 
+  ggplot(aes(
+    x = reorder(station_name, effort_days),
+    y = effort_days,
+    fill = effort_type
+  )) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  labs(
+    x = "Station",
+    y = "Effort days",
+    fill = NULL
+  ) +
+  theme_minimal()
+```
+
+While it might seem like a lot of effort to work this out for a 5% overestimate of time, but if you're relying on some of these receivers as an indicator of core habitat then you're going to get pretty significant zero-inflation as a result and bias your results. Therefore taking the time to really understand you foundational datasets gives you a better chance to defend your downstream analysis.
+
+## Count unique receiver stations
+
+How many unique receiver stations have been deployed in the ATAP network over time?
+
+```{r count-receiver-stations}
+receiver_effort %>% 
+  distinct(station_name) %>% 
+  count()
+```
+
+Add station coordinates back to the effort table.
+
+```{r add-receiver-coordinates}
+receiver_coords <- receiver %>% 
+  dplyr::select(station_name, latitude, longitude) %>% 
+  distinct()
+
+receiver_effort <- receiver_effort %>% 
+  left_join(receiver_coords, by = "station_name")
+```
+
+Export the cleaned receiver effort file.
+
+```{r export-receiver-effort}
+write.csv(
+  receiver_effort,
+  "data/receiver_effort_clean.csv",
+  row.names = FALSE
+)
+```
+
+# Release locations
+
+Release data can be built into the biometrics table, but some packages and workflows use a separate release-location file.
+
+```{r load-release}
+release <- read_csv("data/tag_locations.csv")
+
+release <- janitor::clean_names(release)
+
+release <- release %>% 
+  rename(
+    latitude = lat,
+    longitude = lon
+  )
+
+release
+```
+
+Export the cleaned release file if needed.
+
+```{r export-release, eval=FALSE}
+write.csv(
+  release,
+  "data/release_clean.csv",
+  row.names = FALSE
+)
+```
+
+# Wrap-up
+
+In this section we cleaned and checked the three core telemetry metadata tables:
+
+-   biometrics
+-   detections
+-   receiver metadata
+
+The most important lesson is that telemetry quality control is not just about making the data neat. It directly affects downstream estimates of detections, residency, movement, receiver effort, and bias.
