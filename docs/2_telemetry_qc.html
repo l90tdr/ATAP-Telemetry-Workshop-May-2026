@@ -122,7 +122,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.qmd"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -221,8 +221,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>This workflow is based broadly on the formats currently used in ATAP data reports distributed to the telemetry community in southern Africa.</p>
 <p>If you are using data that have been uploaded to and downloaded from Fathom, you may need to slightly adjust the column names or file structures. However, the workflow should introduce the core coding concepts so that you can adapt them to other telemetry datasets.</p>
-<section id="load-packages" class="level1">
-<h1>Load packages</h1>
+<section id="load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="load-packages">Load packages</h2>
 <p>We start by loading the packages needed for data wrangling, date handling, cleaning column names, and working with text strings.</p>
 <div class="cell">
 <details open="" class="code-fold">
@@ -234,7 +234,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-5"><a href="#cb1-5"></a>  stringr</span>
 <span id="cb1-6"><a href="#cb1-6"></a>)</span>
 <span id="cb1-7"><a href="#cb1-7"></a></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co">#start fresh environment </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="co"># you can also use the library() to load packages individually</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co">#start fresh environment </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>The <code>tidyverse</code> loads the core data wrangling and plotting packages. The <code>lubridate</code> package is especially useful for working with dates and times.</p>
@@ -1435,11 +1437,11 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 </div>
 </div>
 </div>
-<p>While it might seem like a lot of effort to work this out for a 5% overestimate of time, but if you’re relying on some of these receivers as an indicator of core habitat then you’re going to get pretty significant zero-inflation as a result and bias your results. Therefore taking the time to really understand you foundational datasets gives you a better chance to defend your downstream analysis.</p>
+<p>It might seem like a lot of effort to work this out for a 5% overestimate of time, but if you’re relying on some of these receivers as an indicator of core habitat then you’re going to get pretty significant zero-inflation as a result and bias your results. Therefore taking the time to really understand you foundational datasets gives you a better chance to defend your downstream analysis and you now know the array a little bit better.</p>
 </section>
 <section id="count-unique-receiver-stations" class="level2">
 <h2 class="anchored" data-anchor-id="count-unique-receiver-stations">Count unique receiver stations</h2>
-<p>How many unique receiver stations have been deployed in the ATAP network over time?</p>
+<p>How many unique receiver stations have been deployed in the ATAP network over time? Remember that you can’t rely on the obs in your environment to tell you how many stations were deployed, you know need to use distinct() since station name could appear on several rows.</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
@@ -1529,8 +1531,9 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <li>biometrics</li>
 <li>detections</li>
 <li>receiver metadata</li>
+<li>release sites</li>
 </ul>
-<p>The most important lesson is that telemetry quality control is not just about making the data neat. It directly affects downstream estimates of detections, residency, movement, receiver effort, and bias.</p>
+<p>The most important lesson is that telemetry quality control is not just about making the data neat. It directly affects downstream estimates of detections, residency, movement, receiver effort, and bias. We’ve done all this without having to open Excel and manually wrangle data. This saves trying to figure out and remember what you clicked, changed or moved, so that you can execute scripts quickly and dig into the interesting stuff.</p>
 
 
 </section>

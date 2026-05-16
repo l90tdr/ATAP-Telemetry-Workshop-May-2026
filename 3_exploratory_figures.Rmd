@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 
 # Exploratory figures
 
-Question? What are the first results that generally appear in the telemetry literature?
+What are the first results that generally appear in the telemetry literature?
 
 Usually an abacus plot:
 
@@ -34,12 +34,24 @@ Usually an abacus plot:
 
 And a summary table which gives useful biometrics and stats per individual for the reader:
 
-![](tables/publication_summary_table.png)
+![](tables/publication_summary_table_mark.png)
 
 It seems basic, but well presented opening tables and figures set the tone for the rest of the paper.
 
 ```{r load-packages}
-pacman::p_load(tidyverse, lubridate, janitor, stringr, viridis, flextable, officer, geosphere, leaflet, sf)
+pacman::p_load(
+            tidyverse,
+            lubridate,
+            janitor,
+            stringr,
+            viridis,
+            flextable,
+            officer,
+            geosphere,
+            leaflet,
+            sf
+            )
+
 rm(list = ls()) # start with a fresh and clean environment 
 ```
 
@@ -134,7 +146,7 @@ detections_speed %>%
   print(n = 20)
 ```
 
-While there are a few instances of fast swim speeds above our threshold, the receivers are relatively close to one another so there isn't too much concern here. Again this is a relatively quick and dirty approach but you can tweak these to test for unrealistically quick and far detections that you can identify for removal. Another key removal criteria is to remove any detections you have for that transmitter prior to it's release date or after a known mortality date.
+While there are a few instances of fast swim speeds above our threshold, the receivers are relatively close to one another so there isn't too much concern here. Again this is a relatively quick and dirty approach but you can tweak these to test for unrealistically quick and far detections that you can identify for removal. Another key removal criteria is to remove any detections you have for that transmitter prior to its release date or after a known mortality date.
 
 ```{r load-other-clean-data}
 biometrics <- read_csv("data/biometrics_clean.csv")
@@ -341,9 +353,9 @@ abacus_sex <- ggplot()+
 abacus_sex
 ```
 
-Faceting plots is a quick way to render useful insights based on different factors you might be interested in. You can swap out sex for group or release location for example. Theses just need to be coded as factors so ggplot can render. If you have several plots that you want to combine into a detailed multi-panel figure, then you would need to create seperate plot objects (e.g. p1, p2, p3) and use the {cowplot}, {patchwork} or {gridExtra} packages to neatly arrange your plots into nice rows and columns.
+Faceting plots is a quick way to render useful insights based on different factors you might be interested in. You can swap out sex for group or release location for example. These just need to be coded as factors so ggplot can render. If you have several plots that you want to combine into a detailed multi-panel figure, then you would need to create separate plot objects (e.g. p1, p2, p3) and use the {cowplot}, {patchwork} or {gridExtra} packages to neatly arrange your plots into nice rows and columns.
 
-For 5 individuals there are \~30k detections that ggplot is trying to render. When you have lots of tags and tens of thousands of detections, plotting can become slow. One useful option is to thin the data for visualisation by keeping only the first detection per shark, receiver and day. This keeps a daily record of receiver use while removing repeated intraday detections and reduces the computational burden of rendering the abacus plot. Looks pretty good lets export to our plot folder and tweak the image dimensions.
+For 5 individuals there are \~20k detections that ggplot is trying to render. When you have lots of tags and tens of thousands of detections, plotting can become slow. One useful option is to thin the data for visualisation by keeping only the first detection per shark, receiver and day. This keeps a daily record of receiver use while removing repeated intraday detections and reduces the computational burden of rendering the abacus plot. Looks pretty good lets export to our plot folder and tweak the image dimensions.
 
 ```{r save-abacus-sex}
 ggsave("plots/Abacus_plot_sex.png",
@@ -353,27 +365,33 @@ ggsave("plots/Abacus_plot_sex.png",
        width = 12)
 ```
 
-At the array scale plotting points by receiver can get pretty messy, but it might be something of interest to a finer scale study. Alternatively we can build in another grouping level to give the study region some more biogeographic context. Broadly from mozambique to st lucia is tropical, then subtropical to kei mouth and warm temperate after kei mouth.
+At the array scale plotting points by receiver can get pretty messy, but it might be something of interest to a finer scale study. Alternatively we can build in another grouping level to give the study region some more biogeographic context. Broadly from Mozambique to St. Lucia is tropical, then subtropical to Kei mouth and warm-temperate after Kei mouth.
 
 ```{r add-biogeozone}
 stlucia_lat <- -28.17
 kei_lat <- -32.68
-receivers$biogeozone <- dplyr::case_when(
-  receivers$latitude <= kei_lat ~ "Warm temperate",
-  receivers$latitude > kei_lat &
-  receivers$latitude < stlucia_lat ~ "Subtropical",
-  receivers$latitude >= stlucia_lat ~ "Tropical"
-)
+receivers <- receivers %>% 
+  mutate(
+    biogeozone = case_when(
+      latitude <= kei_lat ~ "Warm temperate",
+      latitude > kei_lat &
+        latitude < stlucia_lat ~ "Subtropical",
+      latitude >= stlucia_lat ~ "Tropical"
+    )
+  )
 ```
 
 And we can add country in a similar way if we're dealing with transboundary movement.
 
 ```{r add-region}
 sa_moz_lat <- -26.86
-receivers$region <- case_when(
-  receivers$latitude < sa_moz_lat ~ "South Africa",
-  receivers$latitude >= sa_moz_lat ~ "Mozambique"
-)
+receivers <- receivers %>% 
+  mutate(
+    region = case_when(
+      latitude < sa_moz_lat ~ "South Africa",
+      latitude >= sa_moz_lat ~ "Mozambique"
+    )
+  )
 ```
 
 Last abacus this time by biozone.
@@ -528,6 +546,17 @@ ggplot()+
        colour = "Zone")
 ```
 
+# Excercise 
+
+Try using some of the above code to:
+
+-   Facet your abacus plot by biogeographic zone
+-   Just plot the regular abacus plot for females
+-   Change the legend label on the zone plot to biogeographic zone
+-   Use scale_colour_manual() to choose your own colours for the biogeographic zones (window press F1, mac press fn + F1 to take a look at the help section if you get stuck)
+-   Change the legend position to the bottom of the plot (hint look in the theme() help)
+
+
 # Detection summary table
 
 ```{r table-summary}
@@ -576,36 +605,54 @@ tablesum <- biometrics %>%
       NA_real_
     )
   )
-print(tablesum)
+tablesum %>% select(release_date,shark,release,detections,receivers,days_detected,residency_index)
 ```
 
 There's a huge amount of literature on residency indices for acoustic telemetry, so check in on this to see which would make sense for your context. RIs are not perfect but give a good indication of what individuals and indeed your tagged 'population' are doing.
+
+We can also apply some simple maths functions to our data which are often summariesed to represent the tagged cohort of animals
+
+```{r tablesum-means}
+
+table_summary_stats <- tablesum %>% 
+  summarise(
+    mean_detections = mean(detections, na.rm = TRUE),
+    sd_detections = sd(detections, na.rm = TRUE)
+  )
+
+table_summary_stats %>% select(mean_detections, sd_detections)
+
+```
+
+
+# Exercise 
+
+Now calculate the mean and sd for
+
+-   Convert your residency index to a %
+-   Receivers detected on
+-   Days detected
+-   Residency
+
+What does your residency average actually mean? 
+
+The residency calculation implies that sharks were detected, on average, during only ~9% of the days they were at liberty (liberty meaning from tag - study end date). This gives you really useful context about the detection efficacy of the array for the species you're studying. It also becomes important later when modelling these data, as sparse detections, uneven receiver coverage, or highly transient behaviour can strongly influence how robust and interpretable downstream statistical models are likely to be.
+
 
 Now let's create a nice publication ready table that summarises some of these important stats for the reader
 
 ```{r publication-table}
 publication_table <- tablesum %>% 
+  
   mutate(effective_tag_end = as.Date(effective_tag_end)) %>% 
-  select(
-    shark,
-    release_date,
-    effective_tag_end,
-    # first_detect,
-    # last_detect,
-    group,
-    sex,
-    recaptured,
-    detections,
-    receivers,
-    days_detected,
-    residency_index
-  ) %>% 
   mutate(
-    residency_index = round(residency_index, 3)
+    residency_index = round(residency_index, 3),
+    total_days = round(total_days, 0),
   ) %>% 
   rename_with(
     ~ stringr::str_to_sentence(gsub("_", " ", .x))
-  ) 
+  )
+
 publication_flex <- publication_table %>% 
   flextable() %>% 
   autofit() %>% 
@@ -628,6 +675,19 @@ publication_flex <- publication_table %>%
   )
 publication_flex
 ```
+
+
+# Exercise 
+
+Let's customise our publication table as currently everything from tablesum is being rendered so let's refine by:
+
+-   Retaining what you think are the most useful columns (this is entirely personal hint: use select)
+-   Change the text size in the table to 15
+-   rename Residency index to RI (this is tricky! You might need to use `` if you decide to rename Residency index after str_sentence)
+-   Convert your RI to %
+
+
+
 
 There's lots of different export formats, but this image export aligns to A4 so you can go manual and import into a word doc. Eventually working in Rmarkdown and quarto can rapidly improve your writing analysis workflow and everything gets updated in one place
 
@@ -858,15 +918,13 @@ m <- leaflet() %>%
 m
 ```
 
+
 Have a look and see if you can answer:
 
-For shark PSJ3, which receiver has the most detections?
-
-What is the most westerly receiver PSJ1 was detected on?
-
-What is the most northern receiver PSJ5 was detected on?
-
-How many movements did PSJ5 record between the PSJ002 and PSJ003 receivers? (Hint look on the east coast)
+-   For shark PSJ3, which receiver has the most detections?
+-   What is the most westerly receiver PSJ1 was detected on?
+-   What is the most northern receiver PSJ5 was detected on?
+-   How many movements did PSJ5 record between the PSJ002 and PSJ003 receivers? (Hint look on the east coast)
 
 There's other spatial tools that you can add to your leaflet map including the option to measure distance and area as well as add place labels etc. So there's lots of customisation potential which can be used for outreach, funders, supervisors and collaborators as a quick peek approach. While not overly useful for static maps you can start to get your bearings with leaflet as to the scales that you will need to apply for your static figures. This can help with data extraction for base layers and coastlines.
 

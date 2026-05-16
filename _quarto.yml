@@ -7,7 +7,7 @@ website:
   navbar:
     left:
       - text: Home
-        href: index.qmd
+        href: index.Rmd
       - text: 1. Folder organising
         href: 1_folder_organising.Rmd
       - text: 2. Telemetry QC

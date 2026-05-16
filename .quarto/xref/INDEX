@@ -1,11 +1,14 @@
 {
+  "index.Rmd": {
+    "index.html": "eecc0e7e"
+  },
   "3_exploratory_figures.Rmd": {
-    "3_exploratory_figures.html": "418785a1"
+    "3_exploratory_figures.html": "050df9bd"
   },
   "1_folder_organising.Rmd": {
-    "1_folder_organising.html": "bc62c509"
+    "1_folder_organising.html": "78fc2a5f"
   },
   "2_telemetry_qc.Rmd": {
-    "2_telemetry_qc.html": "0607c9f6"
+    "2_telemetry_qc.html": "4d3ce125"
   }
 }
