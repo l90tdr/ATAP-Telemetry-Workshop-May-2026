@@ -22,3 +22,9 @@ If git is not installed on your machine then simply go to the top of the repo an
 
 You can visit https://l90tdr.github.io/ATAP-Telemetry-Workshop-May-2026/ to scroll through the workshop markdown in an easy on they eye format. 
 
+The idea of this workshop is for you to be able to utilise the code in the tutorial to build your own script to execute. There are also a exercises along the way that will allow you to test what you have applied along the way. As you build your script during the workshop the key is to make comments (using the # operator) along the way so you remember not only what you have done but why. This ensures that when you come back to it in a year you can pick up and run the code with confidence. I've intentionally left out a direct script for each tutorial so that you get to grips with scripting in a tidy fashion and you can come away with three self-coded scripts that you can a) run, but b) chop and change things to apply to your own data. 
+
+Enjoy 
+
+Toby
+E: toby@sharkspotters.org.za
