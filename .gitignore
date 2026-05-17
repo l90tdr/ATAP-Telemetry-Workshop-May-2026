@@ -1,3 +1,10 @@
+.Rhistory
+.RData
+.Rproj.user/
+.quarto/
+*_cache/
 
+.DS_Store
+
+data/raw/
 /.quarto/
-scripts/

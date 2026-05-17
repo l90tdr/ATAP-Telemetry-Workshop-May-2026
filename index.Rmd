@@ -24,7 +24,7 @@ I should preface that this workshop is not intended to be an exhaustive deep div
 
 *"How do I show my supervisors/funders/collaborators/parents some tangible results that this has all been worth it"*
 
-As with anything if we break things into small logical steps and harness some useful data sceince tools we can ensure that our workflows are efficient and repeatable so we don't waste eons searching for the csv that I swear I'd perfected. Therefore, after this workshop, you should be able to work in an R project environment to:
+As with anything if we break things into small logical steps and harness some useful data science tools we can ensure that our workflows are efficient and repeatable so we don't waste eons searching for the csv that I swear I'd perfected. Therefore, after this workshop, you should be able to work in an R project environment to:
 
 -   Neatly file everything into organised folders 
 -   Take your raw detections and metadata and understand the need to clean
