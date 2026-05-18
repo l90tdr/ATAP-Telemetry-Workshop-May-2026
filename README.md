@@ -14,7 +14,7 @@ Topics covered include:
 
 It would be wise to have a mildly recent version of R installed on your machine before we start.
 
-Participants can either download the repository as a `.zip` file or clone it directly from GitHub to work through the workshop locally in RStudio and Quarto.
+Participants can either download the repository as a `.zip` file or clone it directly from GitHub to work through the workshop locally in RStudio and Quarto. Copy the following into your terminal.
 
 ```bash
 git clone https://github.com/l90tdr/ATAP-Telemetry-Workshop-May-2026.git
