@@ -480,15 +480,15 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">head</span>(detections)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 10
-  `Date and Time (UTC)` Receiver     Transmitter    `Sensor Value` `Sensor Unit`
-  &lt;dttm&gt;                &lt;chr&gt;        &lt;chr&gt;          &lt;lgl&gt;          &lt;lgl&gt;        
-1 2020-11-20 12:58:49   VR2AR-549803 A69-9001-14787 NA             NA           
-2 2020-11-20 12:59:50   VR2AR-549803 A69-9001-14787 NA             NA           
-3 2020-11-20 13:01:18   VR2AR-549803 A69-9001-14787 NA             NA           
-4 2020-11-20 13:02:40   VR2AR-549803 A69-9001-14787 NA             NA           
-5 2020-11-20 13:03:47   VR2AR-549803 A69-9001-14787 NA             NA           
-6 2020-11-20 13:04:26   VR2AR-549803 A69-9001-14787 NA             NA           
+<pre><code># A tibble: 6 × 11
+   ...1 `Date and Time (UTC)` Receiver  Transmitter `Sensor Value` `Sensor Unit`
+  &lt;dbl&gt; &lt;dttm&gt;                &lt;chr&gt;     &lt;chr&gt;       &lt;lgl&gt;          &lt;lgl&gt;        
+1     1 2021-12-06 18:01:33   VR2W-119… A69-9001-6… NA             NA           
+2     2 2025-03-16 03:11:48   VR2W-112… A69-9001-6… NA             NA           
+3     3 2025-03-15 20:12:47   VR2W-112… A69-9001-6… NA             NA           
+4     4 2021-11-25 10:44:05   VR2AR-54… A69-9001-6… NA             NA           
+5     5 2023-02-06 01:00:46   VR2W-131… A69-9001-6… NA             NA           
+6     6 2025-05-19 12:41:26   VR2AR-54… A69-9001-6… NA             NA           
 # ℹ 5 more variables: `Station Name` &lt;chr&gt;, Latitude &lt;dbl&gt;, Longitude &lt;dbl&gt;,
 #   `Transmitter Name` &lt;chr&gt;, `Transmitter Serial` &lt;dbl&gt;</code></pre>
 </div>
@@ -497,15 +497,15 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">tail</span>(detections)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 10
-  `Date and Time (UTC)` Receiver     Transmitter   `Sensor Value` `Sensor Unit`
-  &lt;dttm&gt;                &lt;chr&gt;        &lt;chr&gt;         &lt;lgl&gt;          &lt;lgl&gt;        
-1 2022-01-25 12:00:28   VR2AR-545744 A69-9001-5211 NA             NA           
-2 2022-01-25 12:01:24   VR2AR-545744 A69-9001-5211 NA             NA           
-3 2022-01-25 12:02:29   VR2AR-545744 A69-9001-5211 NA             NA           
-4 2022-01-25 12:03:54   VR2AR-545744 A69-9001-5211 NA             NA           
-5 2022-01-25 12:05:19   VR2AR-545744 A69-9001-5211 NA             NA           
-6 2022-01-25 12:06:42   VR2AR-545744 A69-9001-5211 NA             NA           
+<pre><code># A tibble: 6 × 11
+   ...1 `Date and Time (UTC)` Receiver  Transmitter `Sensor Value` `Sensor Unit`
+  &lt;dbl&gt; &lt;dttm&gt;                &lt;chr&gt;     &lt;chr&gt;       &lt;lgl&gt;          &lt;lgl&gt;        
+1 20435 2021-10-21 07:31:02   VR2AR-54… A69-9001-6… NA             NA           
+2 20436 2022-02-14 02:56:01   VR2AR-54… A69-9001-6… NA             NA           
+3 20437 2022-10-25 06:28:09   VR2W-120… A69-9001-6… NA             NA           
+4 20438 2024-02-09 18:16:57   VR2W-112… A69-9001-6… NA             NA           
+5 20439 2024-01-02 16:36:12   VR2W-112… A69-9001-6… NA             NA           
+6 20440 2025-05-20 16:09:40   VR2AR-54… A69-9001-6… NA             NA           
 # ℹ 5 more variables: `Station Name` &lt;chr&gt;, Latitude &lt;dbl&gt;, Longitude &lt;dbl&gt;,
 #   `Transmitter Name` &lt;chr&gt;, `Transmitter Serial` &lt;dbl&gt;</code></pre>
 </div>
@@ -519,17 +519,17 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <span id="cb27-3"><a href="#cb27-3"></a><span class="fu">head</span>(detections)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 10
-  date_and_time_utc   receiver transmitter sensor_value sensor_unit station_name
-  &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;       &lt;lgl&gt;        &lt;lgl&gt;       &lt;chr&gt;       
-1 2020-11-20 12:58:49 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-2 2020-11-20 12:59:50 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-3 2020-11-20 13:01:18 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-4 2020-11-20 13:02:40 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-5 2020-11-20 13:03:47 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-6 2020-11-20 13:04:26 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-# ℹ 4 more variables: latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, transmitter_name &lt;chr&gt;,
-#   transmitter_serial &lt;dbl&gt;</code></pre>
+<pre><code># A tibble: 6 × 11
+     x1 date_and_time_utc   receiver     transmitter    sensor_value sensor_unit
+  &lt;dbl&gt; &lt;dttm&gt;              &lt;chr&gt;        &lt;chr&gt;          &lt;lgl&gt;        &lt;lgl&gt;      
+1     1 2021-12-06 18:01:33 VR2W-119172  A69-9001-64674 NA           NA         
+2     2 2025-03-16 03:11:48 VR2W-112347  A69-9001-64673 NA           NA         
+3     3 2025-03-15 20:12:47 VR2W-112347  A69-9001-64673 NA           NA         
+4     4 2021-11-25 10:44:05 VR2AR-546783 A69-9001-64674 NA           NA         
+5     5 2023-02-06 01:00:46 VR2W-131729  A69-9001-64673 NA           NA         
+6     6 2025-05-19 12:41:26 VR2AR-547831 A69-9001-64675 NA           NA         
+# ℹ 5 more variables: station_name &lt;chr&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;,
+#   transmitter_name &lt;chr&gt;, transmitter_serial &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <section id="time-zones" class="level2">
@@ -556,17 +556,17 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">head</span>(detections)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 10
-  timestamp           receiver transmitter sensor_value sensor_unit station_name
-  &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;       &lt;lgl&gt;        &lt;lgl&gt;       &lt;chr&gt;       
-1 2020-11-20 14:58:49 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-2 2020-11-20 14:59:50 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-3 2020-11-20 15:01:18 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-4 2020-11-20 15:02:40 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-5 2020-11-20 15:03:47 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-6 2020-11-20 15:04:26 VR2AR-5… A69-9001-1… NA           NA          ARN001      
-# ℹ 4 more variables: latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, transmitter_name &lt;chr&gt;,
-#   transmitter_serial &lt;dbl&gt;</code></pre>
+<pre><code># A tibble: 6 × 11
+     x1 timestamp           receiver     transmitter    sensor_value sensor_unit
+  &lt;dbl&gt; &lt;dttm&gt;              &lt;chr&gt;        &lt;chr&gt;          &lt;lgl&gt;        &lt;lgl&gt;      
+1     1 2021-12-06 20:01:33 VR2W-119172  A69-9001-64674 NA           NA         
+2     2 2025-03-16 05:11:48 VR2W-112347  A69-9001-64673 NA           NA         
+3     3 2025-03-15 22:12:47 VR2W-112347  A69-9001-64673 NA           NA         
+4     4 2021-11-25 12:44:05 VR2AR-546783 A69-9001-64674 NA           NA         
+5     5 2023-02-06 03:00:46 VR2W-131729  A69-9001-64673 NA           NA         
+6     6 2025-05-19 14:41:26 VR2AR-547831 A69-9001-64675 NA           NA         
+# ℹ 5 more variables: station_name &lt;chr&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;,
+#   transmitter_name &lt;chr&gt;, transmitter_serial &lt;dbl&gt;</code></pre>
 </div>
 </div>
 </section>
@@ -603,15 +603,15 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <pre><code># A tibble: 9 × 1
   transmitter
   &lt;chr&gt;      
-1 14787      
-2 14786      
-3 14785      
-4 5211       
-5 64673      
-6 64675      
+1 64674      
+2 64673      
+3 64675      
+4 14787      
+5 14786      
+6 5211       
 7 5212       
-8 64674      
-9 5211a      </code></pre>
+8 5211a      
+9 14785      </code></pre>
 </div>
 </div>
 <p>There are more transmitters in the detection data than in the biometrics file.</p>
@@ -626,15 +626,15 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <pre><code># A tibble: 9 × 2
   transmitter detections
   &lt;chr&gt;            &lt;int&gt;
-1 14785              219
-2 14786              146
-3 14787             6156
-4 5211              4638
-5 5211a              200
-6 5212              1632
-7 64673            12102
-8 64674             3451
-9 64675             5524</code></pre>
+1 14785              140
+2 14786               87
+3 14787             3701
+4 5211              2787
+5 5211a              119
+6 5212               954
+7 64673             7287
+8 64674             2077
+9 64675             3288</code></pre>
 </div>
 </div>
 <p>We can compare transmitters in the detections against the biometrics file using joins.</p>
@@ -653,10 +653,10 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <pre><code># A tibble: 4 × 2
   transmitter     n
   &lt;chr&gt;       &lt;int&gt;
-1 14787        6156
-2 14785         219
-3 5211a         200
-4 14786         146</code></pre>
+1 14787        3701
+2 14785         140
+3 5211a         119
+4 14786          87</code></pre>
 </div>
 </div>
 <p>The <code>semi_join()</code> keeps only detection records with transmitters that are present in the biometrics file.</p>
@@ -674,11 +674,11 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <pre><code># A tibble: 5 × 2
   transmitter     n
   &lt;chr&gt;       &lt;int&gt;
-1 64673       12102
-2 64675        5524
-3 5211         4638
-4 64674        3451
-5 5212         1632</code></pre>
+1 64673        7287
+2 64675        3288
+3 5211         2787
+4 64674        2077
+5 5212          954</code></pre>
 </div>
 </div>
 </section>
@@ -696,8 +696,8 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <pre><code># A tibble: 2 × 2
   transmitter     n
   &lt;chr&gt;       &lt;int&gt;
-1 5211         4638
-2 5211a         200</code></pre>
+1 5211         2787
+2 5211a         119</code></pre>
 </div>
 </div>
 <p>Look at the detections in time order.</p>
@@ -709,20 +709,21 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <span id="cb43-3"><a href="#cb43-3"></a>  <span class="fu">arrange</span>(timestamp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4,838 × 6
-   timestamp           receiver station_name latitude longitude transmitter
-   &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;      
- 1 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6 5211       
- 2 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6 5211       
- 3 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6 5211a      
- 4 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6 5211       
- 5 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6 5211       
- 6 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6 5211a      
- 7 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6 5211       
- 8 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6 5211       
- 9 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6 5211a      
-10 2021-07-23 14:53:08 546770   PSJ002          -31.6      29.6 5211       
-# ℹ 4,828 more rows</code></pre>
+<pre><code># A tibble: 2,906 × 7
+      x1 timestamp           receiver station_name latitude longitude
+   &lt;dbl&gt; &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;
+ 1  4100 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6
+ 2 14009 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6
+ 3  4412 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6
+ 4  6650 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6
+ 5 12907 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6
+ 6  1086 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6
+ 7 14790 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6
+ 8 15788 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6
+ 9   286 2021-07-23 14:53:08 546770   PSJ002          -31.6      29.6
+10  6160 2021-07-23 14:53:08 546770   PSJ002          -31.6      29.6
+# ℹ 2,896 more rows
+# ℹ 1 more variable: transmitter &lt;chr&gt;</code></pre>
 </div>
 </div>
 <p>It appears that <code>5211a</code> detections are duplicates of <code>5211</code>. We can inspect the duplicated records directly.</p>
@@ -736,21 +737,22 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <span id="cb45-5"><a href="#cb45-5"></a>  <span class="fu">arrange</span>(timestamp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4,838 × 6
-# Groups:   timestamp, station_name [2,319]
-   timestamp           receiver station_name latitude longitude transmitter
-   &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;      
- 1 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6 5211       
- 2 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6 5211       
- 3 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6 5211a      
- 4 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6 5211       
- 5 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6 5211       
- 6 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6 5211a      
- 7 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6 5211       
- 8 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6 5211       
- 9 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6 5211a      
-10 2021-07-23 14:53:08 546770   PSJ002          -31.6      29.6 5211       
-# ℹ 4,828 more rows</code></pre>
+<pre><code># A tibble: 1,856 × 7
+# Groups:   timestamp, station_name [907]
+      x1 timestamp           receiver station_name latitude longitude
+   &lt;dbl&gt; &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;
+ 1  4100 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6
+ 2 14009 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6
+ 3  4412 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6
+ 4  6650 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6
+ 5 12907 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6
+ 6  1086 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6
+ 7 14790 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6
+ 8 15788 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6
+ 9   286 2021-07-23 14:53:08 546770   PSJ002          -31.6      29.6
+10  6160 2021-07-23 14:53:08 546770   PSJ002          -31.6      29.6
+# ℹ 1,846 more rows
+# ℹ 1 more variable: transmitter &lt;chr&gt;</code></pre>
 </div>
 </div>
 <p>Now remove transmitters that do not have biometrics metadata.</p>
@@ -783,11 +785,11 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <pre><code># A tibble: 5 × 1
   transmitter
   &lt;chr&gt;      
-1 5211       
+1 64674      
 2 64673      
 3 64675      
-4 5212       
-5 64674      </code></pre>
+4 5211       
+5 5212       </code></pre>
 </div>
 </div>
 </section>
@@ -802,22 +804,11 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <span id="cb51-3"><a href="#cb51-3"></a>  <span class="fu">filter</span>(<span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 4,638 × 6
-# Groups:   timestamp, receiver, station_name, latitude, longitude, transmitter
-#   [2,319]
-   timestamp           receiver station_name latitude longitude transmitter
-   &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;      
- 1 2021-07-23 14:49:29 546770   PSJ002          -31.6      29.6 5211       
- 2 2021-07-23 14:51:16 546770   PSJ002          -31.6      29.6 5211       
- 3 2021-07-23 14:52:22 546770   PSJ002          -31.6      29.6 5211       
- 4 2021-07-23 14:53:08 546770   PSJ002          -31.6      29.6 5211       
- 5 2021-07-23 14:53:53 546770   PSJ002          -31.6      29.6 5211       
- 6 2021-07-23 14:54:40 546770   PSJ002          -31.6      29.6 5211       
- 7 2021-07-23 14:55:28 546770   PSJ002          -31.6      29.6 5211       
- 8 2021-07-23 14:56:17 546770   PSJ002          -31.6      29.6 5211       
- 9 2021-07-23 14:57:09 546770   PSJ002          -31.6      29.6 5211       
-10 2021-07-23 14:58:08 546770   PSJ002          -31.6      29.6 5211       
-# ℹ 4,628 more rows</code></pre>
+<pre><code># A tibble: 0 × 7
+# Groups:   x1, timestamp, receiver, station_name, latitude, longitude,
+#   transmitter [0]
+# ℹ 7 variables: x1 &lt;dbl&gt;, timestamp &lt;dttm&gt;, receiver &lt;chr&gt;,
+#   station_name &lt;chr&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, transmitter &lt;chr&gt;</code></pre>
 </div>
 </div>
 <p>Duplicate detections are common in telemetry datasets. They can arise from manual file handling, accidental import of the same receiver file more than once, or simultaneous detections across neighbouring receivers.</p>
@@ -1021,11 +1012,11 @@ $ tag_end      &lt;date&gt; 2025-08-20, 2031-07-13, 2031-07-13, 2031-07-13, 2031
 <span id="cb65-12"><a href="#cb65-12"></a><span class="fu">print</span>(detections_on_lost_receivers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 0 × 10
-# ℹ 10 variables: timestamp &lt;dttm&gt;, receiver.x &lt;chr&gt;, station_name &lt;chr&gt;,
-#   latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, transmitter &lt;chr&gt;, receiver.y &lt;chr&gt;,
-#   deploymentdatetime_timestamp &lt;dttm&gt;, recoverydatetime_timestamp &lt;dttm&gt;,
-#   status &lt;chr&gt;</code></pre>
+<pre><code># A tibble: 0 × 11
+# ℹ 11 variables: x1 &lt;dbl&gt;, timestamp &lt;dttm&gt;, receiver.x &lt;chr&gt;,
+#   station_name &lt;chr&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, transmitter &lt;chr&gt;,
+#   receiver.y &lt;chr&gt;, deploymentdatetime_timestamp &lt;dttm&gt;,
+#   recoverydatetime_timestamp &lt;dttm&gt;, status &lt;chr&gt;</code></pre>
 </div>
 </div>
 <p>A key question is whether detections from receivers marked as lost should be retained. If a receiver was later found and uploaded, detections may be real, but the true recovery date may still be ambiguous.</p>
